@@ -16,7 +16,66 @@ var app = new Framework7({
 //    - une fonction afficher() qui construit la liste
 //    - une fonction ajouterTache(texte)
 //    - une fonction supprimerTache(id)
-//
+var taches = [ 
+  { id: 1, texte: "Réviser l'algorithmique",        fait: true }, 
+  { id: 2, texte: "Réviser jquery", fait: true  }, 
+   { id: 3, texte: "Réviser les bases de données", fait: false  }, 
+   { id: 4, texte: "Réviser les API REST", fait: false }, 
+]; 
+
+function ligneTache(t) {
+    return `
+    <li class="item-content" data-id="${t.id}">
+      <div class="item-media">
+        <label class="checkbox">
+          <input type="checkbox" ${t.fait ? 'checked' : ''} />
+          <i class="icon-checkbox"></i>
+        </label>
+      </div>
+      <div class="item-inner">
+        <div class="item-title">${t.texte}</div>
+        <div class="item-after">
+        <a href="#" class="btn-suppr"><i class="icon f7-icons">trash</i></a> 
+      </div>
+      </div>
+    </li>
+    `;
+}
+  
+function afficherTache() {
+     $$('.list-taches').empty();
+    
+  taches.map(tache => {
+   const li = ligneTache(tache);
+   $$('.list-taches').append(li);
+  });
+} 
+
+function ajouterTache(texte) { 
+if (texte.trim() === '') return; 
+var nouvelId = taches.reduce(function (m, t) { return Math.max(m, t.id); }, 0) + 1; 
+taches.push({ id: nouvelId, texte: texte.trim(), fait: false }); 
+afficherTache(); 
+} 
+  
+afficherTache(); // premier affichage 
+
+
+$$(document).on('click', '#btn-ajouter', function () { 
+var champ = $$('#champ-tache'); 
+ajouterTache(champ.val()); 
+champ.val(''); 
+}); 
+
+function supprimerTache(id) { 
+taches = taches.filter(function (t) { return t.id !== parseInt(id, 10); }); 
+afficherTache(); 
+} 
+$$(document).on('click', '.btn-suppr', function (e) { 
+e.preventDefault(); 
+var id = $$(this).parents('.item-content').attr('data-id'); 
+supprimerTache(id); 
+});
 //  SÉANCE 3 — ajouter :
 //    - basculerTache(id) pour cocher / décocher
 //    - le compteur de tâches restantes
